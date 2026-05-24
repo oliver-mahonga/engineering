@@ -1,9 +1,24 @@
 'use strict';
 'use client';
 
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { ArrowUpRight, ShieldCheck, HardHat } from 'lucide-react';
 
 export default function Hero() {
+  // Array of your 4 local architectural assets
+  const images = ['/showcase.jpg', '/1.jpg', '/2.jpg', '/3.jpg'];
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Automatically cycle through images every 4 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 4000);
+
+    return () => clearInterval(timer);
+  }, [images.length]);
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center bg-slate-950 pt-20 overflow-hidden">
       {/* Background Subtle Mesh / Blueprint grid */}
@@ -43,17 +58,39 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="md:col-span-5 relative w-full h-[450px] bg-slate-900 border border-slate-800 rounded-sm p-4 overflow-hidden group">
-          {/* Main Visual Placeholder Container */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-transparent to-transparent z-10" />
-          <div className="w-full h-full relative bg-slate-950 flex items-center justify-center overflow-hidden border border-slate-800/80">
-            {/* Visual simulation mapping structural wireframe lines */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [size:16px_16px]" />
-            <div className="z-20 text-center px-4">
-              <span className="block text-xs uppercase tracking-widest text-amber-500 font-mono mb-2">// HIGH-END RENDERS</span>
-              <p className="text-sm text-slate-400 italic">Insert your architectural masterwork render/photo here (Hero Background Block)</p>
-            </div>
+        {/* Dynamic Alternating Showcase Image Container */}
+        <div className="md:col-span-5 relative w-full h-[450px] bg-slate-900 border border-slate-800 rounded-sm p-2 overflow-hidden group">
+          {/* Subtle architectural gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950/60 via-transparent to-transparent z-10 pointer-events-none" />
+          
+          <div className="w-full h-full relative rounded-sm overflow-hidden border border-slate-800/80 bg-slate-950">
+            {images.map((src, index) => (
+              <div
+                key={src}
+                className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentIndex ? 'opacity-100 z-0' : 'opacity-0 -z-10'}`}
+              >
+                <Image
+                  src={src}
+                  alt={`Magla Architectural Render Showcase ${index + 1}`}
+                  fill
+                  priority={index === 0}
+                  sizes="(max-width: 768px) 100vw, 450px"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
+              </div>
+            ))}
           </div>
+
+          {/* Minimalist Slide Progress Indicators (Bottom Right Dots) */}
+          <div className="absolute bottom-6 right-6 z-20 flex space-x-1.5 bg-slate-950/60 backdrop-blur-sm px-2.5 py-1.5 rounded-full border border-slate-800/40">
+            {images.map((_, index) => (
+              <span
+                key={index}
+                className={`h-1.5 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-4 bg-amber-500' : 'w-1.5 bg-slate-600'}`}
+              />
+            ))}
+          </div>
+
         </div>
       </div>
     </section>
